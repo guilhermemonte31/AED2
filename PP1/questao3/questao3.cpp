@@ -67,9 +67,6 @@ void WeightedGraphAL:: add_edge(Vertex u, Vertex v, Weight w){
         adj[v].push_back(item_u);
         num_edges++;
     } 
-    else cout<<"Duplicado."<<endl;
-
-
 }
 
 void WeightedGraphAL:: remove_edge(Vertex u, Vertex v){
