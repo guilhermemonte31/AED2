@@ -25,6 +25,9 @@ def check_cpf(cpf):
             if cpf[i] != '-' and cpf[i] != '.':
                 list.append(int(cpf[i]))
 
+        if list.count(list[0]) == len(list):
+            return False
+
         # VALIDATING FIRST DIGIT
         # STEP 1
         sum = 0
@@ -264,14 +267,6 @@ def check_security_code(security_code):
     else:
         return False
 
-
-# MAIN
-# lote -> listaCliente -> identificadorCliente(cpf/cnpj) / listaChaves(email/rapida/telefone)
-#     -> separador
-#     -> listaTransações -> origem / destino / valor / timestamp
-
-# CPF : CPFs do tipo 111.111.111-11 ; 222.222.222-22 ... são aceitos pelo algoritmo, mas não existem! (Devo tirar?)
-
 # INÍCIO
 # Loop para receber e avaliar todos os clientes e seus dados, até encontrar a divisória "==========":
 
@@ -287,6 +282,7 @@ valid_keys_list = []
 # válidas acima (A primeira posição [0] será reservada para futura validação de cliente origem e destinatário):
 startpos_keys_list = [0]
 
+# 1o main: inputs divididos (como parar???)
 while True:
     client = input()
 
@@ -294,7 +290,7 @@ while True:
 
     client_identifier = client_data[0]
 
-    if client_identifier[0] == "=":
+    if client_identifier == "==========":
         break
     
     else:
@@ -325,54 +321,63 @@ while True:
         startpos_keys_list.append(count)
 
 if not first_validation:
-    print(False)
+    print(False, end='')
 
 # PARTE 2:
 # Novo loop para receber e avaliar as transações entre os clientes, até receber o último input:
 
 else:
-    while True:
-        transaction = input()
+    try:
+        while True:
+            transaction = input()
 
-        transaction_data = transaction.split(" ")
+            transaction_data = transaction.split(" ")
 
-        source_key = transaction_data[0]
-        target_key = transaction_data[1]
-        value = transaction_data[2] + " " + transaction_data[3]
-        timestamp = transaction_data[4] + " " + transaction_data[5]
-        security_code = transaction_data[6]
+            source_key = transaction_data[0]
+            target_key = transaction_data[1]
+            value = transaction_data[2] + " " + transaction_data[3]
+            timestamp = transaction_data[4] + " " + transaction_data[5]
+            security_code = transaction_data[6]
 
-        second_validation = check_source_key(source_key)
+            second_validation = check_source_key(source_key)
 
+            if not second_validation:
+                break
+
+            second_validation = check_target_key(target_key)
+
+            if not second_validation:
+                break
+
+            second_validation = check_value(value)
+
+            if not second_validation:
+                break
+
+            second_validation = check_timestamp(timestamp)
+
+            if not second_validation:
+                break
+
+            second_validation = check_security_code(security_code)
+
+            if not second_validation:
+                break
+
+    except EOFError:
         if not second_validation:
-            break
+            print(False, end='')
+        else:
+            print(True, end='')
 
-        second_validation = check_target_key(target_key)
 
-        if not second_validation:
-            break
 
-        second_validation = check_value(value)
+# MAIN
+# lote -> listaCliente -> identificadorCliente(cpf/cnpj) / listaChaves(email/rapida/telefone)
+#     -> separador
+#     -> listaTransações -> origem / destino / valor / timestamp
 
-        if not second_validation:
-            break
-
-        second_validation = check_timestamp(timestamp)
-
-        if not second_validation:
-            break
-
-        second_validation = check_security_code(security_code)
-
-        if not second_validation:
-            break
-
-        break
-
-    if not second_validation:
-        print(False)
-    else:
-        print(True)
+# CPF : CPFs do tipo 111.111.111-11 ; 222.222.222-22 ... são aceitos pelo algoritmo, mas não existem! (Devo tirar?)
 
 # CASO DE TESTE BASE (True):
 
