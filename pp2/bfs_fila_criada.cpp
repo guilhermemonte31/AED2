@@ -1,11 +1,7 @@
 #include <iostream>
-#include <stdlib.h>
 #include <vector>
 #include <list>
 #include <iomanip>
-#include <string>
-#include <sstream>
-#include <queue>
 
 using namespace std;
 
@@ -107,7 +103,7 @@ int main(){
     pair<char, int> knight('c',7);
     pair<char, int> king('e', 4);
     int i = bfs(knight, king);
-    cout<<"teste "<<i;
+    cout<<"passos: "<<i;
 
 
 
