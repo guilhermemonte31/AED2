@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 #include <list>
-#include <queue>
 
 using namespace std;
 
@@ -94,46 +93,6 @@ int bfs(pair<char, int> knight, pair<char, int> king){
     }
     return level;
 }
-// int mult_bfs(pair<char, int> king, vector<pair<char, int>> cavalos){
-//     int level =0;
-//     vector<pair<char, int>> visited;
-//     int found = 0;
-    
-//     for(int i=0; i<4; i++){
-//         if(cavalos[i] == king){
-//             found ++;
-//         }
-//     }
-//     if(found > 0) return found;
-//     if(knight.first == king.first && knight.second == king.second) return 0;
-
-//     Queue_class<pair<char, int>> queue;
-//     list<pair<char, int>> lista = queue.get_list();
-    
-
-//     queue.insert_element(knight);
-//     visited.push_back(knight);
-//     while(!(queue.is_empty())){
-//         int size = queue.list_size();
-//         level ++;
-//         while(size !=0){
-
-//             pair<char, int> current = queue.remove_element();
-
-//             vector<pair<int, int>> moves = {{1, 2}, {1, -2}, {-1, -2},{-1, 2}, {2, -1}, {2, 1}, {-2, -1}, {-2, 1}};
-//             for(int i=0; i<8; i++){
-//                 pair<char, int> test(char(current.first+moves[i].first), (current.second + moves[i].second));
-//                 if(test == king) return level;
-//                 if(test.first >='a' && test.first<='h' && test.second>=1 && test.second <=8 && !(verifica_vetor(visited, test))){
-//                     visited.push_back(test);
-//                     queue.insert_element(test);
-//                 }
-//             }
-//             size--;
-//         }
-//     }
-//     return level;
-// }
 void bubble_sort(vector<int> &v){
     for(int i=0; i<(v.size()-1); i++){
         for(int j=0; j<(v.size()-i-1); j++){
@@ -150,6 +109,7 @@ int main(){
     
     int n;
     cin>>n;
+    vector<int> answer;
     for(int u=0; u<n; u++){
 
         string c1, c2, c3, c4, k;
@@ -173,13 +133,18 @@ int main(){
         }
         bubble_sort(founded);
         int minimum = founded[0];
-        cout<<minimum<<" ";
+        answer.push_back(founded[0]);
+        //cout<<minimum<<" ";
         for(int i=1; i<4; i++){
             if(founded[i] == minimum){
-                cout<<founded[i]<<" ";
+                //cout<<founded[i]<<" ";
+                answer.push_back(founded[i]);
             }
         }
-        cout<<endl;
+        //cout<<endl;
+    }
+    for(int i=0; i<answer.size(); i++){
+        cout<<answer[i];
     }
 
 }
