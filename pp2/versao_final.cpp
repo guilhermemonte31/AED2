@@ -62,9 +62,16 @@ class Graph{
         list<Position> chess;
     public:
         Graph(pair<int, int>);
+        ~Graph();
         bool verifica_vetor(vector <pair<int, int>>, pair<int, int>);
         int search(pair<int, int>);
+        void show();
 };
+
+Graph::~Graph(){
+    visited.clear();
+    chess.clear();
+}
 
 bool Graph:: verifica_vetor(vector <pair<int, int>> v, pair<int, int> element){
     typename vector<pair<int, int>>::iterator it;
@@ -104,6 +111,13 @@ int Graph::search(pair<int, int> knight){
     }
 }
 
+void Graph::show(){
+    list<Position>::iterator it;
+    for(it = chess.begin(); it != chess.end(); it++){
+        cout<<"coluna: "<< (*it).pos.first<<" linha: "<< (*it).pos.second<<" nivel: "<< (*it).level<<endl;
+    }
+    cout<<"total: "<<chess.size();
+}
 
 
 void bubble_sort(vector<int> &v){
@@ -131,6 +145,7 @@ int main(){
         pair<int, int>cav4 (int(c4[0]-96), (int(c4[1])-48));
         pair<int, int>king (int(k[0]-96), (int(k[1])-48));
         Graph graph{king};
+        // graph.show();
 
         vector<pair<int, int>> cavalos;
         cavalos.push_back(cav1);
@@ -150,8 +165,12 @@ int main(){
                 answer.push_back(founded[i]);
             }
         }
+        //graph.~Graph();
+        
     }
     for(int i=0; i<answer.size(); i++){
         cout<<answer[i];
+
     }
+
 }
