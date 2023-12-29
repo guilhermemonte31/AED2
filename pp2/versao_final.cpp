@@ -8,9 +8,8 @@ using namespace std;
 
 template <typename T>
 class Queue_class{
-    private:
-        list <T> lst;
     public:
+        list <T> lst;
         void insert_element(T element);
         T remove_element();
         void show();
@@ -59,11 +58,12 @@ class Position{
 class Graph{
     private:
         vector<pair<int, int>> visited;
+        Queue_class<Position> queue;
+        list<Position> chess;
     public:
-
+        Graph(pair<int, int>);
         bool verifica_vetor(vector <pair<int, int>>, pair<int, int>);
-        int bfs(pair<int, int>, pair<int, int>);
-        void displayWeights();
+        int search(pair<int, int>);
 };
 
 bool Graph:: verifica_vetor(vector <pair<int, int>> v, pair<int, int> element){
@@ -71,39 +71,39 @@ bool Graph:: verifica_vetor(vector <pair<int, int>> v, pair<int, int> element){
     for(it = v.begin(); it!=v.end(); it++){
         if(*it == element){
             return true;
-        }else{
-            return false;
         }
     }
+    return false;
 }
-int Graph::bfs(pair<int, int> king, pair<int, int>knight){
-    Queue_class<Position> queue;
+Graph::Graph(pair<int, int> king){
     queue.insert_element(Position(king, 0));
+    chess.push_back(Position(king, 0));
     visited.push_back(king);
-    int toadd_level=0;
-    bool founded = false;
-    
-
     vector<pair<int, int>> moves = {{1, 2}, {1, -2}, {-1, -2},{-1, 2}, {2, -1}, {2, 1}, {-2, -1}, {-2, 1}};
-    
-    while(!(founded)){
-        Position test = queue.remove_element();
-        //queue.pop();
+    int i=0;
+    while(!(queue.is_empty())){
+        Position atual = queue.remove_element();
         for(int i=0; i<8; i++){
-            
-            pair<int, int> toadd((test.pos.first+moves[i].first), (test.pos.second+moves[i].second));
+            pair<int, int> toadd((atual.pos.first+moves[i].first), (atual.pos.second+moves[i].second));
             if(toadd.first >=1 && toadd.first<=8 && toadd.second>=1 && toadd.second <=8 && !(verifica_vetor(visited, toadd))){
-
                 visited.push_back(toadd);
-                toadd_level = test.level+1;
-                queue.insert_element(Position(toadd, toadd_level));
-                if(toadd == knight){
-                    return toadd_level;
-                }
+                chess.push_back(Position(toadd, (atual.level+1)));
+                queue.insert_element(Position(toadd, (atual.level+1)));
             }
         }
+        
     }
 }
+
+int Graph::search(pair<int, int> knight){
+    list<Position>::iterator it;
+    for(it=chess.begin(); it!= chess.end(); it++){
+        if((*it).pos == knight){
+            return (*it).level;
+        }
+    }
+}
+
 
 
 void bubble_sort(vector<int> &v){
@@ -119,9 +119,6 @@ void bubble_sort(vector<int> &v){
 
 }
 int main(){
-    int t;
-    Graph graph;
-
     int n;
     cin>>n;
     vector<int> answer;
@@ -133,6 +130,7 @@ int main(){
         pair<int, int>cav3 (int(c3[0]-96), (int(c3[1])-48));
         pair<int, int>cav4 (int(c4[0]-96), (int(c4[1])-48));
         pair<int, int>king (int(k[0]-96), (int(k[1])-48));
+        Graph graph{king};
 
         vector<pair<int, int>> cavalos;
         cavalos.push_back(cav1);
@@ -141,7 +139,7 @@ int main(){
         cavalos.push_back(cav4);
         vector<int> founded;
         for(int i=0; i<4; i++){
-            int t = (graph.bfs(king, cavalos[i]))-1;
+            int t = (graph.search(cavalos[i]))-1;
             founded.push_back(t);
         }    
         bubble_sort(founded);  
