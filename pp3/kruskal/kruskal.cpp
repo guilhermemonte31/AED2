@@ -11,6 +11,7 @@ class Graph{
         int *parent;
     public:
         Graph(int);
+        ~Graph();
         void addEdge(int, int, float);
         void makeSet(int);
         int findSet(int);
@@ -27,8 +28,10 @@ Graph::Graph(int n){
 
 }
 
-void Graph::makeSet(int n){
-    parent[n] = n;
+Graph::~Graph(){
+    graph.clear();
+    mst.clear();
+
 }
 
 void Graph::addEdge(int u, int v, float weight){
@@ -37,6 +40,10 @@ void Graph::addEdge(int u, int v, float weight){
     weightedEdge.first.second = v;
     weightedEdge.second = weight;
     graph.push_back(weightedEdge);
+}
+
+void Graph::makeSet(int n){
+    parent[n] = n;
 }
 
 int Graph::findSet(int i){
