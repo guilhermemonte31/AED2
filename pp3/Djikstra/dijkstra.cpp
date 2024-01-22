@@ -28,7 +28,7 @@ class VertexWeightPair
         VertexWeightPair(Vertex vertex, Weight weight): vertex(vertex), weight(weight) {}
 };
 
-class WeightedDigraphAL 
+class WeightedGraphAL 
 {
     private:
         unsigned int num_vertices;
@@ -36,8 +36,8 @@ class WeightedDigraphAL
         list<VertexWeightPair> *adj;
 
     public:
-        WeightedDigraphAL(unsigned int);
-        ~WeightedDigraphAL();
+        WeightedGraphAL(unsigned int);
+        ~WeightedGraphAL();
 
         void add_edge(Vertex, Vertex, Weight);
 		void remove_edge(Vertex, Vertex);
@@ -48,12 +48,12 @@ class WeightedDigraphAL
         unsigned int get_num_edges() { return num_edges; }
 };
 
-WeightedDigraphAL::WeightedDigraphAL(unsigned int _num_vertices): num_vertices(_num_vertices)
+WeightedGraphAL::WeightedGraphAL(unsigned int _num_vertices): num_vertices(_num_vertices)
 {
 	adj = new list<VertexWeightPair>[num_vertices + 1];
 } 
 
-WeightedDigraphAL::~WeightedDigraphAL() 
+WeightedGraphAL::~WeightedGraphAL() 
 {
 	for (unsigned int u = 0; u < num_vertices; ++u) 
     {
@@ -66,7 +66,7 @@ WeightedDigraphAL::~WeightedDigraphAL()
 	num_vertices = num_edges = 0;
 } 
 
-void WeightedDigraphAL::add_edge(Vertex u, Vertex v, Weight w) 
+void WeightedGraphAL::add_edge(Vertex u, Vertex v, Weight w) 
 {
 	bool is_duplicated = false;
 
@@ -79,20 +79,30 @@ void WeightedDigraphAL::add_edge(Vertex u, Vertex v, Weight w)
 		}
 	}
 
+    for(it = adj[v.vertex].begin(); it != adj[v.vertex].end(); it++)
+	{
+		if(it->vertex.vertex == u.vertex){
+			is_duplicated = true;
+		}
+	}
+
 	if(!is_duplicated)
 	{
 		VertexWeightPair item_v{v, w};
+        VertexWeightPair item_u{u, w};
 
 		adj[u.vertex].push_back(item_v);	
+        adj[v.vertex].push_back(item_u);
 		
 		num_edges++;
 	}
 }
 
 
-void WeightedDigraphAL:: remove_edge(Vertex u, Vertex v)
+void WeightedGraphAL:: remove_edge(Vertex u, Vertex v)
 {
 	list<VertexWeightPair>::iterator it_u = adj[u.vertex].begin();
+    list<VertexWeightPair>::iterator it_v = adj[v.vertex].begin();
 
 	for(; it_u != adj[u.vertex].end(); it_u++)
 	{
@@ -100,17 +110,27 @@ void WeightedDigraphAL:: remove_edge(Vertex u, Vertex v)
 		{
 			adj[u.vertex].erase(it_u);	
 
-			num_edges --;
 			break;		
 		}
 	}
 
+    for(; it_v != adj[v.vertex].end(); it_v++)
+	{
+		if(it_v->vertex.vertex == u.vertex)
+		{
+			adj[v.vertex].erase(it_v);
+
+			break;		
+		}
+	}
+
+    num_edges --;
 }
 
-void input_WeightedDigraphAL(WeightedDigraphAL &g, unsigned int num_edges, Vertex *vertex_list) 
+void input_WeightedGraphAL(WeightedGraphAL &g, unsigned int num_edges, Vertex *vertex_list) 
 {
-	Vertex u{0, NULL, inf};
-	Vertex v{0, NULL, inf};
+	Vertex u{0, 0, inf};
+	Vertex v{0, 0, inf};
 
 	Weight w;
 
@@ -130,15 +150,15 @@ void display_list(list<VertexWeightPair> &lst)
     {
         cout << "(" << item_vertex.vertex.vertex << ", " << item_vertex.weight << "), ";
 
-		if (item_vertex.vertex.vertex == 1)
-			cout << "vertice 1.pi: " << item_vertex.vertex.pi << " ; vertice 1.distance: " << item_vertex.vertex.distance << endl; 
+		// if (item_vertex.vertex.vertex == 1)
+		// 	cout << "vertice 1.pi: " << item_vertex.vertex.pi << " ; vertice 1.distance: " << item_vertex.vertex.distance << endl; 
     }
     cout << endl;
 }
 
-void display_graph(WeightedDigraphAL &g)
+void display_graph(WeightedGraphAL &g)
 {
-	Vertex v{0, NULL, inf};
+	Vertex v{0, 0, inf};
 
     for(; v.vertex <= g.get_num_vertices(); v.vertex++)
     {
@@ -183,7 +203,7 @@ class MinPQueue
 template <typename T>
 MinPQueue<T>::MinPQueue(unsigned int tam): tam(tam)
 {
-    Queue = new Vertex[tam];
+    Queue = new Vertex[tam + 1];
     tam_heap = 0;
 }
 
@@ -280,7 +300,7 @@ void Display_list (MinPQueue<T> &Q)
     Vertex *lst = Q.get_Queue();
     int tam_lst = Q.get_tam_heap();
 
-    // cout << "Tam_lst: " << tam_lst << "lst[0]: "<< lst[0].vertex << endl;
+    // cout << "Tam_lst: " << tam_lst << "lst[0]: " << lst[0].vertex << endl;
  
     for (int item = 1; item <= tam_lst; item++)
         cout << lst[item].vertex << ", ";
@@ -296,7 +316,7 @@ class Dijkstra
 	public:
 		void Initialize(Vertex *, unsigned int);
         void Relax(Vertex, Vertex, Weight, Vertex *);
-        void Dijkstra_process(Vertex *, unsigned int, MinPQueue<Vertex> &, WeightedDigraphAL &);
+        void Dijkstra_process(Vertex *, unsigned int, MinPQueue<Vertex> &, WeightedGraphAL &);
 };
 
 void Dijkstra::Initialize(Vertex *vertex_list, unsigned int origin_s)
@@ -322,7 +342,7 @@ void Dijkstra::Relax(Vertex u, Vertex v, Weight w, Vertex *vertex_list)
     }
 }
 
-void Dijkstra::Dijkstra_process(Vertex *vertex_list, unsigned origin_s, MinPQueue<Vertex> &Q, WeightedDigraphAL &g)
+void Dijkstra::Dijkstra_process(Vertex *vertex_list, unsigned int origin_s, MinPQueue<Vertex> &Q, WeightedGraphAL &g)
 {
     int cont = 1;
 
@@ -344,8 +364,9 @@ void Dijkstra::Dijkstra_process(Vertex *vertex_list, unsigned origin_s, MinPQueu
 
         list<VertexWeightPair> lst = g.get_adj(u);
 
-        for(VertexWeightPair item_vertex: lst)
+        for(VertexWeightPair item_vertex : lst)
         {
+            // cout << "item_vertex.vertex: " << item_vertex.vertex.vertex << "item_vertex.weight: " << item_vertex.weight << endl;
             Relax(vertex_list[u.vertex], item_vertex.vertex, item_vertex.weight, vertex_list);
         }
     }
@@ -366,11 +387,11 @@ int main()
 	cout << "num_vertices: " << num_vertices << endl;
 	cout << "num_edges: " << num_edges << endl;
 
-    WeightedDigraphAL g{num_vertices};
+    WeightedGraphAL g{num_vertices};
 
-	input_WeightedDigraphAL(g, num_edges, vertex_list);
+	input_WeightedGraphAL(g, num_edges, vertex_list);
 
-    // display_graph(g);
+    display_graph(g);
 
 	Dijkstra dikstra;
 
