@@ -7,31 +7,55 @@
 #   estado atual (0), novo estado(0), conteudo atual(1), 
 #   conteudo a ser inserido(#),  movimentacao(D)
 def verify_word(word, dict_tm):
-    new_word = ''
+    tape = word + "bbbbbbbbbbbb"
+    tape_list=[]
+    
+    for i in range(len(tape)):
+        tape_list.append(tape[i])
+    
+    
     begin = dict_tm['inicial']
     accept = dict_tm['aceita']
     reject = dict_tm['rejeita']
     delta = dict_tm['delta']
     
+    is_moving = True
     current_state = begin
     delta_size = len(delta)
-    word_size = len(word)
     i=0
-    while i<word_size: #while pra percorrer a palavra
+    
+    
+    while is_moving: #while pra percorrer a palavra
+        
         for j in range(delta_size):
-            if current_state == delta[j][0] and str(word[i]) == str(delta[j][2]):
+            
+            if current_state == delta[j][0] and tape_list[i]== str(delta[j][2]):
+                
                 current_state = delta[j][1]
-                new_word += str(delta[j][3])
-                if(delta[j][4] == 'D' and i<word_size):
+                
+                if str(delta[j][3]) != 'b':
+                    tape_list[i] = str(delta[j][3])
+                    
+                
+                if(delta[j][4] == 'D'):
                     i +=1
                     break
-                elif delta[j][4] == 'E' and i>0:
+                elif delta[j][4] == 'E':
                     i -=1
                     break
                 elif delta[j][4] == 'P':
-                    i +=0
+                    is_moving = False
                     break
-    print(f"Fim estado final: {current_state} palavra final: {new_word}")
+                
+    final_world=''
+    k=0
+    while tape_list[k] != 'b':
+        final_world += tape_list[k]
+        k+=1
+    if current_state== accept:
+        print(final_world, "ACEITA") 
+    elif current_state == reject:
+        print(final_world, "REJEITA")         
             
   
         
@@ -45,6 +69,7 @@ dict_tm = eval(turing_machine)
 
 for i in range(num_words): #for pra fazer a quantidade de palavras
     word = input()
+    
     j=0
     verify_word(word, dict_tm)
 
