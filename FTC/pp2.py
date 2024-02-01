@@ -1,11 +1,4 @@
-#{
-#    'inicial':0,'aceita':1,'rejeita':2,
-#    'delta':[(0,0,1,"#","D"),(0,0,0,"x","D"),(0,1,"b","b","P"),
-#    (0,2,"x","x","P"), (0,0,1,"#","D")]
-#}
-#   (0,0,1,"#","D")
-#   estado atual (0), novo estado(0), conteudo atual(1), 
-#   conteudo a ser inserido(#),  movimentacao(D)
+
 def verify_word(word, dict_tm):
     tape = word + "bbbbbbbbbbbb"
     tape_list=[]
