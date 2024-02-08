@@ -5,6 +5,76 @@
 
 using namespace std;
 
+
+
+////////////////////////////////////////////////////////////////// BOYER MOORE
+
+class BoyerMoore
+{
+    private:
+        string T;
+        string P;
+        int N;
+        int M;
+        int salto;
+
+    public:
+        BoyerMoore(string, string);
+        void Computa_Tabela_Saltos(int *);
+        void BoyerMoore_process(int *);
+};
+
+BoyerMoore::BoyerMoore(string T_out, string P_out)
+{
+    T = T_out;
+    P = P_out;
+    N = T.size();
+    M = P.size();
+    salto = 0;
+}
+
+void BoyerMoore::Computa_Tabela_Saltos(int *R)
+{
+    for (int i = 0; i < 29; i++)
+        R[i] = -1;
+
+    for (int j = 0; j < M; j++)
+        R[P[j] - 65] = j;
+}
+
+void BoyerMoore::BoyerMoore_process(int *R)
+{
+    for (int i = 0; i <= N - M; i += salto)
+    {
+        salto = 0;
+
+        int j = M - 1;
+
+        for (; j >= 0; j--)
+        {
+            if (P[j] != T[i + j])
+            {
+                salto = j - R[T[i + j] - 65];
+                cout<<salto;
+                if (salto < 1)
+                    salto = 1;
+                
+                break;
+            }
+        }
+
+        if (salto == 0)
+        {
+            cout << "O padrao se encontra na posicao [" << i << "]" << endl;
+            salto = 1;
+        }
+    }
+}
+
+
+
+
+////////////////////////////////////////////////////////////////// HASH TABLE
 class HashTable{
     private:
         unsigned int table_size;
@@ -18,6 +88,7 @@ class HashTable{
         char search_letter(string);
         void show();
         int get_k_value(string);
+        string get_decodify(string, int);
 
 };
 
@@ -113,26 +184,51 @@ char HashTable::search_letter(string code){
             
         }
     }
+
 }
 
 int HashTable::get_k_value(string code){
-    if(code == "~~~"){
-        return 0;
+    int k=0;
+    string message;
+    message += code[0];
+    message += code[1];
+    message += code[2];
+    message += code[3];
+    message += code[4];
+    message += code[5];
+    message += code[6];
+    message += code[7];
+    
+    string example = "MENSAGEM";
+    if(example == message){
+        return k; 
+    }
+    else{
+        while(message[0] != 'M'){
+            k -=1;
+            message[0]+=k;
+        }
+        return k;
     }
 
-    char get_letter = search_letter(code);
-    int i;
-    for(i=0;i<28; i++){
-        cout<<i<<endl;
-        if(get_letter == letters_vector[i]){
-        cout<<"achou "<<i<<endl;
-            break;
-        }
-    }
-    return abs(27-i);
+
 }
 
+string makes_upper(string word){
+    string upper;
+    for(int i=0; i<word.size(); i++){
+        upper += word[i]-32;
+    }
+    return upper;
+}
 
+string HashTable:: get_decodify(string codify, int k){
+    string decodify;
+    for(int i=0; i<codify.size(); i++){
+        decodify += (codify[i]+k);
+    }
+    return decodify;
+}
 
 int main(){
 
@@ -143,43 +239,55 @@ int main(){
     //getting the coded phrase
     string et_phrase;
     cin>>et_phrase;
-    //cout<<endl<<et_phrase;
 
 
+    string character, codify;
 
-    //getting the last character
-    string last_code;
-    int et_phrase_size = et_phrase.size();
-    last_code += et_phrase[et_phrase_size-3];
-    last_code += et_phrase[et_phrase_size-2];
-    last_code += et_phrase[et_phrase_size-1];
-    //cout<<last_code;
+    for(int i=0; i<et_phrase.size(); i+=3){
+        character += et_phrase[i];
+        character += et_phrase[i+1];
+        character += et_phrase[i+2];
+        codify += ht.search_letter(character);
+        character = "";
+    }
+
+    cout<<"Codify: "<<codify<<endl;
+
 
     //getting value of k
-    int k = ht.get_k_value(last_code);
+    int k = ht.get_k_value(codify);
     cout<<"valor de k sera: "<<k;
+
+    string last = ht.get_decodify(codify, k);
+    cout<<endl<<"Mensagem final: "<<last<<endl;
 
  
 
 
-    //catching words to search in et_phrase
-    string word;
-    vector<string> words_vector;
+    // //catching words to search in et_phrase
+    // string word;
+    // vector<string> words_vector;
+    // string word_upper;
 
-    while(word != "fim"){
-        cin>>word;
-        if(word == "fim"){
-            break;
-        }
-        words_vector.push_back(word);
-    }
+    // while(word != "fim"){
+    //     cin>>word;
+    //     if(word == "fim"){
+    //         break;
+    //     }
+    //     word_upper = makes_upper(word);
+    //     cout<<word_upper;
+    //     words_vector.push_back(word);
+    // }
 
 
-    //searching for words in the phrase
-    vector<string>::iterator it;
-    for(it =words_vector.begin(); it != words_vector.end(); it++){
-        //calls boyer  moore for each inserted word
-    }
 
+    // int R[29];
+
+
+    // //searching for words in the phrase
+    // vector<string>::iterator it;
+    // for(it =words_vector.begin(); it != words_vector.end(); it++){
+    //     //calls boyer  moore for each inserted word
+    // }
 
 }
