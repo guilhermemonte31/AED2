@@ -123,11 +123,13 @@ int HashTable::get_k_value(string code){
     char get_letter = search_letter(code);
     int i;
     for(i=0;i<28; i++){
+        cout<<i<<endl;
         if(get_letter == letters_vector[i]){
+        cout<<"achou "<<i<<endl;
             break;
         }
     }
-    return (27-i);
+    return abs(27-i);
 }
 
 
@@ -138,37 +140,46 @@ int main(){
     unsigned int hash_table_size = 7;
     HashTable ht{hash_table_size};
 
+    //getting the coded phrase
     string et_phrase;
     cin>>et_phrase;
+    //cout<<endl<<et_phrase;
 
+
+
+    //getting the last character
     string last_code;
     int et_phrase_size = et_phrase.size();
     last_code += et_phrase[et_phrase_size-3];
     last_code += et_phrase[et_phrase_size-2];
     last_code += et_phrase[et_phrase_size-1];
-    cout<<last_code;
+    //cout<<last_code;
+
+    //getting value of k
     int k = ht.get_k_value(last_code);
     cout<<"valor de k sera: "<<k;
 
+ 
 
 
+    //catching words to search in et_phrase
+    string word;
+    vector<string> words_vector;
 
-    // //catching words to search in et_phrase
-    // string word;
-    // vector<string> words_vector;
+    while(word != "fim"){
+        cin>>word;
+        if(word == "fim"){
+            break;
+        }
+        words_vector.push_back(word);
+    }
 
-    // while(word != "fim"){
-    //     cin>>word;
-    //     if(word == "fim"){
-    //         break;
-    //     }
-    //     words_vector.push_back(word);
-    // }
 
-    // vector<string>::iterator it;
-    // for(it =words_vector.begin(); it != words_vector.end(); it++){
-    //     //calls boyer  moore for each inserted word
-    // }
+    //searching for words in the phrase
+    vector<string>::iterator it;
+    for(it =words_vector.begin(); it != words_vector.end(); it++){
+        //calls boyer  moore for each inserted word
+    }
 
 
 }
