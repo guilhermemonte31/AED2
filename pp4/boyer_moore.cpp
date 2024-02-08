@@ -203,11 +203,14 @@ BoyerMoore::BoyerMoore(string T_out, string P_out)
 
 void BoyerMoore::Computa_Tabela_Saltos(int *R)
 {
-    for (int i = 0; i < 29; i++)
+    for (int i = 0; i < 26; i++)
         R[i] = -1;
 
     for (int j = 0; j < M; j++)
         R[P[j] - 65] = j;
+
+    R[' ' - 6] = -1;
+    R['.' - 19] = -1;
 }
 
 void BoyerMoore::BoyerMoore_process(int *R)
@@ -222,27 +225,39 @@ void BoyerMoore::BoyerMoore_process(int *R)
         {
             if (P[j] != T[i + j])
             {
-                salto = j - R[T[i + j] - 65];
+                if (T[i + j] == ' ')
+                {
+                    salto = j - R[T[i + j] - 6];
+                    cout << salto << " ";
+                }
 
-                cout << "Salto = " << salto << endl;
-
+                else if (T[i + j] == '.')\
+                {
+                    salto = j - R[T[i + j] - 19];
+                    cout << salto << " ";
+                }
+                else
+                {
+                    salto = j - R[T[i + j] - 65];
+                    cout << salto << " ";
+                }
+                
                 if (salto < 1)
                     salto = 1;
-                
+                    
                 break;
             }
         }
 
         if (salto == 0)
         {
-            cout << "(" << i << ")" << endl;
+            cout << salto << " ";
+            cout << "(" << i << ") ";
             salto = 1;
 
-            cout << salto << " ";
         }
-        else
-            cout << salto << " ";
     }
+    cout << endl;
 }
 
 
@@ -296,7 +311,7 @@ int main()
         words_vector.push_back(word);
     }
 
-    int R[29];
+    int R[27];
 
     vector<string>::iterator it;
     for(it = words_vector.begin(); it != words_vector.end(); it++)
