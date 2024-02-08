@@ -1,8 +1,181 @@
 #include <iostream>
-#include <vector>
 #include <list>
+#include <vector>
+#include <math.h>
 
 using namespace std;
+
+class HashTable
+{
+    private:
+        unsigned int table_size;
+        list<pair<char, string>> *table;
+        char *letters_vector;
+
+    public:
+        HashTable(unsigned int);
+        ~HashTable();
+        int perfect_hash(string);
+        void insert_value(char, string);
+        char search_letter(string);
+        void show();
+        int get_k_value(string);
+        string decode(int, string, string);
+
+};
+
+HashTable::HashTable(unsigned int n)
+{
+    table_size = n;
+    table = new list<pair<char, string>>[table_size];
+    
+    insert_value('A', ":::");
+    insert_value('B', ".::");
+    insert_value('C', ":.:");
+    insert_value('D', "::.");
+    insert_value('E', ":..");
+    insert_value('F', ".:.");
+    insert_value('G', "..:");
+    insert_value('H', "...");
+    insert_value('I', "|::");
+    insert_value('J', ":|:");
+    insert_value('K', "::|");
+    insert_value('L', "|.:");
+    insert_value('M', ".|:");
+    insert_value('N', ".:|");
+    insert_value('O', "|:.");
+    insert_value('P', ":|.");
+    insert_value('Q', ":.|");
+    insert_value('R', "|..");
+    insert_value('S', ".|.");
+    insert_value('T', "..|");
+    insert_value('U', ".||");
+    insert_value('V', "|.|");
+    insert_value('W', "||.");
+    insert_value('X', "-.-");
+    insert_value('Y', ".--");
+    insert_value('Z', "--.");
+    insert_value(' ', "---");
+    insert_value('.', "~~~");
+
+    char letter = 'A';
+    letters_vector = new char[28];
+
+    for(int i = 0; i < 26; i++)
+    {
+        letters_vector[i] = letter;
+        letter++;
+    }
+
+    letters_vector[26] = ' ';
+    letters_vector[27] = '.';
+    
+}
+
+HashTable::~HashTable()
+{
+    for (unsigned int i=0; i<table_size; i++)
+        table[i].clear();
+    
+    delete[] table;
+
+    table = nullptr;
+    table_size = 0;
+}
+
+int HashTable::perfect_hash(string key)
+{
+    int TAM_ASCII = 256;
+    int M = 7; // tamanho da tabela
+    int hash = 0;
+    for (int i = 0; i < key.length(); i++) 
+        hash += static_cast<int>(key[i]) * (int)pow(TAM_ASCII, key.length() - i - 1) % M;
+    
+    return hash % M;
+
+}
+
+void HashTable::insert_value(char letter, string code)
+{
+    int id = perfect_hash(code);
+    pair <char, string> test;
+
+    test.first = letter;
+    test.second = code;
+    table[id].push_back(test);
+}
+
+void HashTable::show()
+{
+    for (int i = 0; i < 7; i++)
+    {
+        cout << endl << "lista " << i << endl;
+
+        for (pair<char, string> element: table[i])
+            cout << "(" << element.first << ", " << element.second << ")" << "; ";
+        
+        cout << endl;
+    }
+}
+
+char HashTable::search_letter(string code)
+{
+    int id = perfect_hash(code);
+    for (auto it = table[id].begin(); it != table[id].end(); it++)
+    {
+        if ((*it).second == code)
+            return (*it).first;
+    }
+}
+
+int HashTable::get_k_value(string coded_message)
+{
+    string compare = "MENSAGEM", coded_msg;
+    int k = 0;
+
+    for (int i = 0; i < 8; i++)
+        coded_msg += coded_message[i];
+
+    if (compare == coded_msg)
+        return k;
+    else
+    {
+        while (coded_msg[0] != 'M')
+        {
+            k -= 1;
+            coded_msg[0] += k;
+        }
+
+        return k;
+    }
+}
+
+string HashTable::decode(int k, string coded_message, string decoded_message)
+{
+    int reverse = 0;
+    char reverse_char;
+
+    for (int i = 0; i < coded_message.size(); i++)
+    {
+        if (coded_message[i] != ' ')
+        {
+            if (((int)coded_message[i] + k) < 65)
+            {
+                reverse = 65 - ((int)coded_message[i] + k);
+                reverse_char = 91 - reverse;
+
+                decoded_message += reverse_char;
+            }
+            else
+                decoded_message += (int)coded_message[i] + k;
+        }
+        else
+            decoded_message += ' ';
+    }
+
+    return decoded_message;
+}
+
 
 class BoyerMoore
 {
@@ -34,7 +207,7 @@ void BoyerMoore::Computa_Tabela_Saltos(int *R)
         R[i] = -1;
 
     for (int j = 0; j < M; j++)
-        R[P[j] - 97] = j;
+        R[P[j] - 65] = j;
 }
 
 void BoyerMoore::BoyerMoore_process(int *R)
@@ -49,7 +222,9 @@ void BoyerMoore::BoyerMoore_process(int *R)
         {
             if (P[j] != T[i + j])
             {
-                salto = j - R[T[i + j] - 97];
+                salto = j - R[T[i + j] - 65];
+
+                cout << "Salto = " << salto << endl;
 
                 if (salto < 1)
                     salto = 1;
@@ -60,25 +235,81 @@ void BoyerMoore::BoyerMoore_process(int *R)
 
         if (salto == 0)
         {
-            cout << "O padrao se encontra na posicao [" << i << "]" << endl;
+            cout << "(" << i << ")" << endl;
             salto = 1;
+
+            cout << salto << " ";
         }
+        else
+            cout << salto << " ";
     }
 }
 
 
 int main()
 {
-    string T_out = "abcdefgopahijkopaopadefgh";
-    string P_out = "defg";
+    //creating hash table
+    int k;
+    unsigned int hash_table_size = 7;
+    HashTable ht{hash_table_size};
+
+    string et_phrase;
+    cin >> et_phrase;
+
+    int et_phrase_size = et_phrase.size();
+
+    string charac, codificado, decodificado;
+
+    for (int i = 0; i < et_phrase_size; i += 3)
+    {
+        charac += et_phrase[i];
+        charac += et_phrase[i + 1];
+        charac += et_phrase[i + 2];
+
+        codificado += ht.search_letter(charac);
+        charac = "";
+    }
+
+    // cout << "Codificado: " << codificado << endl;
+
+    k = ht.get_k_value(codificado);
+
+    // cout << "K: " << k << endl;
+
+    decodificado = ht.decode(k, codificado, decodificado);
+
+    cout << "Decodificado: " << decodificado << endl;
+
+    string word;
+    vector<string> words_vector;
+
+    while (true)
+    {
+        cin >> word;
+
+        if(word == "fim")
+            break;
+        
+        for (int k = 0; k < word.size(); k++)
+            word[k] = toupper(word[k]);
+
+        words_vector.push_back(word);
+    }
 
     int R[29];
 
-    BoyerMoore bm{T_out, P_out};
+    vector<string>::iterator it;
+    for(it = words_vector.begin(); it != words_vector.end(); it++)
+    {
+        cout << *it << ": ";
 
-    bm.Computa_Tabela_Saltos(R);
+        BoyerMoore bm{decodificado, *it};
 
-    bm.BoyerMoore_process(R);
+        bm.Computa_Tabela_Saltos(R);
 
-    return 0;
+        // for (int l = 0; l < 29; l++)
+        //     cout << "R[" << l << "]: " << R[l] << endl;
+
+        bm.BoyerMoore_process(R);
+    }
 }
