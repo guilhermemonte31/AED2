@@ -17,6 +17,7 @@ class HashTable{
         void insert_value(char, string);
         char search_letter(string);
         void show();
+        int get_k_value(string);
 
 };
 
@@ -114,6 +115,20 @@ char HashTable::search_letter(string code){
     }
 }
 
+int HashTable::get_k_value(string code){
+    if(code == "~~~"){
+        return 0;
+    }
+
+    char get_letter = search_letter(code);
+    int i;
+    for(i=0;i<28; i++){
+        if(get_letter == letters_vector[i]){
+            break;
+        }
+    }
+    return (27-i);
+}
 
 
 
@@ -123,25 +138,37 @@ int main(){
     unsigned int hash_table_size = 7;
     HashTable ht{hash_table_size};
 
+    string et_phrase;
+    cin>>et_phrase;
 
-    // //vector of alphabet elements
-    // char letters_vector[28] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ','.'};
+    string last_code;
+    int et_phrase_size = et_phrase.size();
+    last_code += et_phrase[et_phrase_size-3];
+    last_code += et_phrase[et_phrase_size-2];
+    last_code += et_phrase[et_phrase_size-1];
+    cout<<last_code;
+    int k = ht.get_k_value(last_code);
+    cout<<"valor de k sera: "<<k;
 
 
-    // string input_string = "--.::.:..---...|.|||....|:.::.---..|...|.||.||.|---||.|..-.-.|||..---|:.:.:::.-.-|.||::----.-|:.::.|.|.--..|..|.|::::---|.:|.:---::.:|....::..:.::.---|.:::...:|::.:.|..---|.:|.::.|||.....:.|..---.--::.::.---...|.|||..||...|:.::.--.";
 
 
-    // //getting last letter
-    // int s = input_string.size();
-    // string w;
-    // w+= input_string[s-3];
-    // w+= input_string[s-2];
-    // w+= input_string[s-1];
-    // int letter_w = ht.search_letter(w);
+    // //catching words to search in et_phrase
+    // string word;
+    // vector<string> words_vector;
 
-    // //getting value of k
-    // int k;
+    // while(word != "fim"){
+    //     cin>>word;
+    //     if(word == "fim"){
+    //         break;
+    //     }
+    //     words_vector.push_back(word);
+    // }
 
+    // vector<string>::iterator it;
+    // for(it =words_vector.begin(); it != words_vector.end(); it++){
+    //     //calls boyer  moore for each inserted word
+    // }
 
 
 }
