@@ -88,8 +88,9 @@ int HashTable::perfect_hash(string key)
     int TAM_ASCII = 256;
     int M = 7; // tamanho da tabela
     int hash = 0;
-    for (int i = 0; i < key.length(); i++) 
-        hash += static_cast<int>(key[i]) * (int)pow(TAM_ASCII, key.length() - i - 1) % M;
+    int len = key.length();
+    for (int i = 0; i < len; i++) 
+        hash += static_cast<int>(key[i]) * (int)pow(TAM_ASCII, len - i - 1) % M;
     
     return hash % M;
 
@@ -126,6 +127,7 @@ char HashTable::search_letter(string code)
         if ((*it).second == code)
             return (*it).first;
     }
+    return '\0';
 }
 
 int HashTable::get_k_value(string coded_message)
@@ -154,10 +156,13 @@ string HashTable::decode(int k, string coded_message, string decoded_message)
 {
     int reverse = 0;
     char reverse_char;
-
-    for (int i = 0; i < coded_message.size(); i++)
+    int coded_len = coded_message.size();
+    for (int i = 0; i < coded_len; i++)
     {
-        if (coded_message[i] != ' ')
+        if (coded_message[i] == '.')
+            decoded_message += '.';
+
+        else if (coded_message[i] != ' ')
         {
             if (((int)coded_message[i] + k) < 65)
             {
@@ -298,6 +303,7 @@ int main()
 
     string word;
     vector<string> words_vector;
+    int word_size;
 
     while (true)
     {
@@ -305,8 +311,10 @@ int main()
 
         if(word == "fim")
             break;
-        
-        for (int k = 0; k < word.size(); k++)
+            
+        word_size = word.size();
+
+        for (int k = 0; k < word_size; k++)
             word[k] = toupper(word[k]);
 
         words_vector.push_back(word);
